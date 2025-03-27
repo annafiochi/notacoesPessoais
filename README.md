@@ -12,17 +12,17 @@ A estrutura do projeto está organizada da seguinte forma:
 - **`.gitignore`**: Define os arquivos e diretórios que não devem ser versionados, como `node_modules` e `.env`.
 - **`package.json`**: Configurações do projeto, incluindo dependências e scripts.
 - **`prisma/`**: Diretório relacionado ao Prisma, contendo o esquema do banco de dados, cliente Prisma e migrações.
-  - **`schema.prisma`**: Define o modelo de dados `Nota` e configura o banco de dados SQLite.
-  - **`client.js`**: Inicializa o cliente Prisma para interagir com o banco de dados.
-  - **`migrations/`**: Contém as migrações do banco de dados.
+- **`schema.prisma`**: Define o modelo de dados `Nota` e configura o banco de dados SQLite.
+- **`client.js`**: Inicializa o cliente Prisma para interagir com o banco de dados.
+- **`migrations/`**: Contém as migrações do banco de dados.
 - **`src/`**: Diretório principal do código-fonte.
-  - **`server.js`**: Configura o servidor Express e define as rotas.
-  - **`controllers/`**: Contém a lógica dos controladores.
-    - **`anotacaoController.js`**: Implementa as operações de CRUD para as anotações.
-  - **`models/`**: Contém a lógica de interação com o banco de dados.
-    - **`anotacaoModel.js`**: Define os métodos para acessar e manipular os dados no banco.
-  - **`routes/`**: Define as rotas da API.
-    - **`anotacaoRoutes.js`**: Configura as rotas para as operações de CRUD.
+- **`server.js`**: Configura o servidor Express e define as rotas.
+- **`controllers/`**: Contém a lógica dos controladores.
+- **`anotacaoController.js`**: Implementa as operações de CRUD para as anotações.
+- **`models/`**: Contém a lógica de interação com o banco de dados.
+- **`anotacaoModel.js`**: Define os métodos para acessar e manipular os dados no banco.
+- **`routes/`**: Define as rotas da API.
+- **`anotacaoRoutes.js`**: Configura as rotas para as operações de CRUD.
 
 ## Funcionalidades
 
@@ -88,11 +88,16 @@ As migrações do banco de dados estão localizadas no diretório [migrations](h
 1. **Instale as dependências**:
    ```bash
    npm install
-2. Configure o banco de dados: Certifique-se de que o arquivo .env está configurado corretamente com a URL do banco de dados.
+2. Configure o banco de dados: Certifique-se de que o arquivo
+```bash
+ .env 
+ está configurado corretamente com a URL do banco de dados.
 
 3. Execute as migrações:
+```bash
 npx prisma migrate dev
 4. Inicie o servidor:
+```bash
 npm run dev
 5. Acesse a API: O servidor estará disponível em
 http://localhost:4000.

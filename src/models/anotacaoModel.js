@@ -14,6 +14,12 @@ class AnotacaoModel {
     });
   };
 
+  getById = async (id) => {
+    return await prisma.nota.findUnique({
+      where: { id },
+    });
+  };
+
   update = async (id, titulo, favorita, cor, atualizadaEm) => {
     try {
       const anotacao = await prisma.nota.update({
