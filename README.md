@@ -91,13 +91,16 @@ As migrações do banco de dados estão localizadas no diretório [migrations](h
 2. Configure o banco de dados: Certifique-se de que o arquivo
 ```bash
  .env 
+```
  está configurado corretamente com a URL do banco de dados.
 
 3. Execute as migrações:
 ```bash
 npx prisma migrate dev
+```
 4. Inicie o servidor:
 ```bash
 npm run dev
+```
 5. Acesse a API: O servidor estará disponível em
 http://localhost:4000.
