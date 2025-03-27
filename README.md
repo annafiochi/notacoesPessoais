@@ -1,258 +1,98 @@
-# Aula: Configuração de Projeto Backend com Prisma
+# Notações Pessoais
 
-## Cabeçalho de Aula
+Este projeto é uma API RESTful desenvolvida em Node.js para gerenciar anotações pessoais. Ele utiliza o framework Express.js e o  Prisma para interagir com um banco de dados. A API permite criar, listar, atualizar e deletar anotações, com suporte a atributos como título, conteúdo, cor, e marcação de favorito.
 
-**Habilidades Trabalhadas:**
+## Estrutura do Projeto
 
-- Desenvolvimento de APIs RESTful com Node.js
-- Integração de ORM (Prisma) com projetos backend
-- Modelagem de dados e persistência
-- Tratamento de erros em aplicações assíncronas
-- Refatoração de código para padrões modernos
+A estrutura do projeto está organizada da seguinte forma:
 
-## Introdução
+### Descrição dos Arquivos
 
-Nesta aula, vamos transformar um projeto backend que utiliza armazenamento em memória para um que utiliza banco de dados persistente através do Prisma ORM. Esta refatoração é um passo importante para criar aplicações escaláveis e robustas.
+- **`.env`**: Contém a variável de ambiente `DATABASE_URL` que aponta para o banco de dados SQLite.
+- **`.gitignore`**: Define os arquivos e diretórios que não devem ser versionados, como `node_modules` e `.env`.
+- **`package.json`**: Configurações do projeto, incluindo dependências e scripts.
+- **`prisma/`**: Diretório relacionado ao Prisma, contendo o esquema do banco de dados, cliente Prisma e migrações.
+  - **`schema.prisma`**: Define o modelo de dados `Nota` e configura o banco de dados SQLite.
+  - **`client.js`**: Inicializa o cliente Prisma para interagir com o banco de dados.
+  - **`migrations/`**: Contém as migrações do banco de dados.
+- **`src/`**: Diretório principal do código-fonte.
+  - **`server.js`**: Configura o servidor Express e define as rotas.
+  - **`controllers/`**: Contém a lógica dos controladores.
+    - **`anotacaoController.js`**: Implementa as operações de CRUD para as anotações.
+  - **`models/`**: Contém a lógica de interação com o banco de dados.
+    - **`anotacaoModel.js`**: Define os métodos para acessar e manipular os dados no banco.
+  - **`routes/`**: Define as rotas da API.
+    - **`anotacaoRoutes.js`**: Configura as rotas para as operações de CRUD.
 
-## Passo a Passo da Configuração
+## Funcionalidades
 
-### 1. Instalando o Prisma
+A API oferece as seguintes funcionalidades:
 
-Primeiro, instale os pacotes necessários e inicialize o Prisma:
+1. **Listar todas as anotações**:
+   - Método: `GET`
+   - Endpoint: `/anotacao`
+   - Retorna todas as anotações cadastradas no banco de dados.
 
-```bash
-npm install prisma @prisma/client
-npx prisma init
-```
+2. **Criar uma nova anotação**:
+   - Método: `POST`
+   - Endpoint: `/anotacao`
+   - Corpo da requisição:
+     ```json
+     {
+       "titulo": "Título da anotação",
+       "conteudo": "Conteúdo da anotação"
+     }
+     ```
+   - Retorna a anotação criada.
 
-### 2. Configurando o arquivo .env
+3. **Atualizar uma anotação existente**:
+   - Método: `PUT`
+   - Endpoint: `/anotacao/:id`
+   - Corpo da requisição:
+     ```json
+     {
+       "titulo": "Novo título",
+       "conteudo": "Novo conteúdo",
+       "favorita": true,
+       "cor": "azul"
+     }
+     ```
+   - Retorna a anotação atualizada.
 
-Crie ou modifique o arquivo `.env` na raiz do projeto:
+4. **Deletar uma anotação**:
+   - Método: `DELETE`
+   - Endpoint: `/anotacao/:id`
+   - Retorna uma mensagem de sucesso ou erro.
 
-```
-DATABASE_URL="file:./dev.db"
-```
+## Banco de Dados
 
-Este é o caminho para o banco SQLite que será usado no desenvolvimento.
+O banco de dados utilizado é o SQLite, configurado no arquivo [.env](http://_vscodecontentref_/11). O modelo de dados `Nota` é definido no arquivo [schema.prisma](http://_vscodecontentref_/12) e possui os seguintes campos:
 
-### 3. Criando o arquivo schema.prisma
+- [id](http://_vscodecontentref_/13): Identificador único da anotação.
+- [titulo](http://_vscodecontentref_/14): Título da anotação.
+- [conteudo](http://_vscodecontentref_/15): Conteúdo da anotação.
+- [favorita](http://_vscodecontentref_/16): Indica se a anotação é marcada como favorita.
+- [cor](http://_vscodecontentref_/17): Cor associada à anotação.
+- [criadaEm](http://_vscodecontentref_/18): Data de criação da anotação.
+- [atualizadaEm](http://_vscodecontentref_/19): Data da última atualização da anotação.
 
-O Prisma já criou o arquivo `prisma/schema.prisma`. Modifique-o conforme o modelo final:
+## Migrações
 
-```prisma
-generator client {
-  provider = "prisma-client-js"
-}
+As migrações do banco de dados estão localizadas no diretório [migrations](http://_vscodecontentref_/20). Elas incluem:
 
-datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
-}
+1. **`20250311171932_create_table`**: Criação inicial da tabela `tasks`.
+2. **`20250327171938_degelo`**: Exclusão da tabela `tasks` e criação da tabela `notas`.
 
-model Task {
-  id        Int     @id @default(autoincrement())
-  descricao String
-  concluida Boolean @default(false)
-  criadaEm  DateTime @default(now())
+## Como Executar o Projeto
 
-  @@map("tasks")
-}
-```
+1. **Instale as dependências**:
+   ```bash
+   npm install
+2. Configure o banco de dados: Certifique-se de que o arquivo .env está configurado corretamente com a URL do banco de dados.
 
-### 4. Criando o cliente Prisma
-
-Crie o arquivo `prisma/client.js`:
-
-```javascript
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
-
-export default prisma;
-```
-
-### 5. Executando a migração inicial
-
-Execute o comando para criar a migração e aplicá-la ao banco de dados:
-
-```bash
-npx prisma migrate dev --name init
-```
-
-### 6. Refatorando o modelo (tarefaModel.js)
-
-Modifique o arquivo `src/models/tarefaModel.js` para usar o Prisma:
-
-```javascript
-import prisma from "../../prisma/client.js";
-
-class TarefaModel {
-  getAll = async () => {
-    return await prisma.task.findMany();
-  };
-
-  create = async (descricao) => {
-    return await prisma.task.create({
-      data: {
-        descricao,
-      },
-    });
-  };
-
-  update = async (id, concluida) => {
-    try {
-      return await prisma.task.update({
-        where: { id },
-        data: {
-          concluida: concluida !== undefined ? concluida : true,
-        },
-      });
-    } catch (error) {
-      // Se a tarefa não for encontrada, o Prisma lançará uma exceção
-      if (error.code === "P2025") {
-        return null;
-      }
-      throw error;
-    }
-  };
-
-  delete = async (id) => {
-    try {
-      await prisma.task.delete({
-        where: { id },
-      });
-      return true;
-    } catch (error) {
-      // Se a tarefa não for encontrada, o Prisma lançará uma exceção
-      if (error.code === "P2025") {
-        return false;
-      }
-      throw error;
-    }
-  };
-
-  getById = async (id) => {
-    return await prisma.task.findUnique({
-      where: { id },
-    });
-  };
-}
-
-export default new TarefaModel();
-```
-
-### 7. Refatorando o controlador (tarefaController.js)
-
-Modifique o arquivo `src/controllers/tarefaController.js` para trabalhar com operações assíncronas:
-
-```javascript
-import tarefaModel from "../models/tarefaModel.js";
-
-class TarefaController {
-  getAll = async (req, res) => {
-    try {
-      const tarefas = await tarefaModel.getAll();
-      res.json(tarefas);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ erro: "Erro ao buscar tarefas" });
-    }
-  };
-
-  create = async (req, res) => {
-    const { descricao } = req.body;
-    try {
-      if (!descricao) {
-        return res.status(400).json({ erro: "Descrição é obrigatória" });
-      }
-      const novaTarefa = await tarefaModel.create(descricao);
-      res.status(201).json(novaTarefa);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ erro: "Erro ao criar tarefa" });
-    }
-  };
-
-  update = async (req, res) => {
-    const { id } = req.params;
-    const { concluida } = req.body;
-
-    try {
-      const tarefaAtualizada = await tarefaModel.update(
-        parseInt(id),
-        concluida
-      );
-
-      if (!tarefaAtualizada) {
-        return res.status(404).json({ erro: "Tarefa não encontrada" });
-      }
-
-      res.json(tarefaAtualizada);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ erro: "Erro ao atualizar tarefa" });
-    }
-  };
-
-  delete = async (req, res) => {
-    const { id } = req.params;
-
-    try {
-      const sucesso = await tarefaModel.delete(parseInt(id));
-
-      if (!sucesso) {
-        return res.status(404).json({ erro: "Tarefa não encontrada" });
-      }
-
-      res.status(204).send();
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ erro: "Erro ao excluir tarefa" });
-    }
-  };
-
-  getById = async (req, res) => {
-    const { id } = req.params;
-
-    try {
-      const tarefa = await tarefaModel.getById(parseInt(id));
-
-      if (!tarefa) {
-        return res.status(404).json({ erro: "Tarefa não encontrada" });
-      }
-
-      res.json(tarefa);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ erro: "Erro ao buscar tarefa" });
-    }
-  };
-}
-
-export default new TarefaController();
-```
-
-### 8. Atualizando as rotas
-
-Se quiser implementar a nova rota `getById` no arquivo de rotas:
-
-```javascript
-import express from "express";
-import tarefaController from "../controllers/tarefaController.js";
-const router = express.Router();
-
-router.get("/", tarefaController.getAll);
-router.get("/:id", tarefaController.getById); // Nova rota
-router.post("/", tarefaController.create);
-router.put("/:id", tarefaController.update);
-router.delete("/:id", tarefaController.delete);
-
-export default router;
-```
-
-## Principais Mudanças na Refatoração
-
-1. **Operações Assíncronas**: Todas as operações de banco de dados são assíncronas, utilizando `async/await`
-2. **Tratamento de Erros**: Implementação de blocos try/catch para lidar com exceções do Prisma
-3. **Persistência de Dados**: Os dados agora são armazenados em um banco SQLite em vez de memória
-4. **Tipagem Automática**: O Prisma gera tipos TypeScript automaticamente para os modelos
+3. Execute as migrações:
+npx prisma migrate dev
+4. Inicie o servidor:
+npm run dev
+5. Acesse a API: O servidor estará disponível em
+http://localhost:4000.
